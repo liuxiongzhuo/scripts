@@ -48,10 +48,11 @@ def upload(file_path,token):
         data = {
             "content": content,
             "message": f"new file {os.path.basename(file_path)}",
+            "branch":"main"
         }
 
-        # 发送 POST 请求
-        headers={"Authorization":"Bearer "+token}
+        # 发送 PUT 请求
+        headers={"Authorization":token}
         try:
             response = requests.put(url,headers=headers, data=data)
             response.raise_for_status()  # 检查请求是否成功
