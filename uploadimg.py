@@ -51,9 +51,9 @@ def upload(file_path,token):
         }
 
         # 发送 POST 请求
-        headers={"Authorization":token}
+        headers={"Authorization":"Bearer "+token}
         try:
-            response = requests.post(url,headers=headers, data=data)
+            response = requests.put(url,headers=headers, data=data)
             response.raise_for_status()  # 检查请求是否成功
             print("File uploaded successfully")
         except requests.exceptions.RequestException as e:
