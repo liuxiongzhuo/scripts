@@ -46,14 +46,14 @@ def upload(file_path,token):
         now = int(time.time())
         url = f"https://api.github.com/repos/liuxiongzhuo/img/contents/i/{now}.png"
         data = {
-            "access_token":token,
             "content": content,
             "message": f"new file {os.path.basename(file_path)}",
         }
 
         # 发送 POST 请求
+        headers={"Authorization":token}
         try:
-            response = requests.post(url, data=data)
+            response = requests.post(url,headers=headers, data=data)
             response.raise_for_status()  # 检查请求是否成功
             print("File uploaded successfully")
         except requests.exceptions.RequestException as e:
