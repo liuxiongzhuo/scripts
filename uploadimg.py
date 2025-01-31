@@ -51,7 +51,6 @@ def upload(file_path,token):
             "message": f"new file {os.path.basename(file_path)}",
             "branch":"main"
         }
-        print(data)
         # 发送 PUT 请求
         headers={"Authorization":"Bearer "+token}
         try:
