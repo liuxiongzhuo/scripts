@@ -3,6 +3,7 @@ import subprocess
 import requests
 import time
 import sys
+import json
 import time
 
 def dir(directory,token):
@@ -42,7 +43,7 @@ def upload(file_path,token):
             print(f"Failed to encode file: {e}")
             return
 
-        # 设置 API 请求参数  # 替换为你的 Gitee token
+        # 设置 API 请求参数  # 替换为你的 github token
         now = int(time.time())
         url = f"https://api.github.com/repos/liuxiongzhuo/img/contents/i/{now}.png"
         data = {
@@ -50,11 +51,11 @@ def upload(file_path,token):
             "message": f"new file {os.path.basename(file_path)}",
             "branch":"main"
         }
-
+        print(data)
         # 发送 PUT 请求
-        headers={"Authorization":token}
+        headers={"Authorization":"Bearer "+token}
         try:
-            response = requests.put(url,headers=headers, data=data)
+            response = requests.put(url,headers=headers, data=json.dumps(data))
             response.raise_for_status()  # 检查请求是否成功
             print("File uploaded successfully")
         except requests.exceptions.RequestException as e:
