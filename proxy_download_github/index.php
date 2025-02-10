@@ -1,46 +1,36 @@
 <?php
 set_time_limit(0);
+
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: *');
+
 $requestURI = $_SERVER['REQUEST_URI'];
 $url = substr(strstr($requestURI, 'url='), strlen('url='));
 //缺少url
-if (!$url) {
+if ($url=='') {
+    http_response_code(400);
     echo 'lack url';
+    exit;
+}
+//处理302
+if (isset($headers['Location'])) {
+    header('Location: '.'/?url='.$headers['Location']);
+    exit;
+}
+//处理不是200的
+if (!strpos($headers['0'],'200')) {
     http_response_code(400);
-    exit;
+    echo 'status is '.$headers['0'];
 }
-parse_str(parse_url($url, PHP_URL_QUERY), $url_query);
-// 不是github的链接
-if (!in_array(parse_url($url,PHP_URL_HOST),['raw.githubusercontent.com','github.com','objects.githubusercontent.com'])) {
-    echo 'host not allowed';
-    http_response_code(400);
-    exit;
-}
-$headers = get_headers($url, 1);
-// 可能跳转
-if ($headers && (strpos($headers[0], '301') || strpos($headers[0], '302'))) {
-    header('Location: '.$_SERVER['SCRIPT_NAME'].'?url=' . $headers['Location']);
-    exit;
-}
-//如果没有
-if (!$headers || !strpos($headers[0], '200')) {
-    echo 'code: ' . $headers[0];
-    http_response_code(400);
-    exit;
-}
-//对github调整文件名
-if ($url_query['response-content-disposition']) {
-    header('Content-Disposition: inline;filename= ' . substr(strstr($url_query['response-content-disposition'], 'filename='), strlen('filename=')));
-} else if (!strstr(basename($url), '.')&&strstr($headers['Content-Type'],'application/zip')) {
-    header('Content-Disposition: inline;filename= '.basename($url).'.zip');
-}else{
-    header('Content-Disposition: inline;filename= '.basename($url));
-}
-//其他请求头
+//在url处理响应头
 if (isset($headers['Content-Length'])) {
-    header('Content-Length: ' . $headers['Content-Length']);
+    header('Content-Length: '.$headers['Content-Length']);
 }
 if (isset($headers['Content-Type'])) {
-    header('Content-Type: ' . $headers['Content-Type']);
+    header('Content-Type: '.$headers['Content-Type']);
+}
+if (isset($headers['Content-Disposition'])) {
+    header('Content-Disposition: '.$headers['Content-Disposition']);
 }
 //开始下载
 $fp = fopen($url, 'rb');
