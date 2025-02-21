@@ -1,0 +1,70 @@
+{
+    "log": {
+        "access": "/dev/null",
+        "error": "/dev/null",
+        "loglevel": "none"
+    },
+    "inbounds": [
+        {
+            "port": 3000,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "ab8c6827-030a-4f98-9fa7-22c179e43b46",
+                        "flow": "xtls-rprx-vision"
+                    }
+                ],
+                "decryption": "none",
+                "fallbacks": [
+                    {
+                        "path": "/xray-vless",
+                        "dest": 4000
+                    }
+                ]
+            },
+            "streamSettings": {
+                "network": "tcp"
+            }
+        },
+        {
+            "port": 4000,
+            "listen": "127.0.0.1",
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "ab8c6827-030a-4f98-9fa7-22c179e43b46"
+                    }
+                ],
+                "decryption": "none"
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {
+                    "path": "/xray-vless"
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ],
+                "metadataOnly": false
+            }
+        }
+    ],
+    "dns": {
+        "servers": [
+            "https+local://8.8.8.8/dns-query"
+        ]
+    },
+    "outbounds": [
+        {
+            "protocol": "freedom"
+        }
+    ]
+}
